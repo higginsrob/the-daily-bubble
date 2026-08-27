@@ -9,6 +9,7 @@ from pathlib import Path
 
 from daily_bubble.config import cache_root
 from daily_bubble.models import ArticleCache, WeatherCache
+from daily_bubble.profiles import validate_id
 
 
 def today_stamp() -> str:
@@ -16,7 +17,9 @@ def today_stamp() -> str:
 
 
 def user_day_dir(user_id: str, day: str | None = None) -> Path:
-    return cache_root() / user_id / (day or today_stamp())
+    user_id = validate_id(user_id)
+    stamp = day or today_stamp()
+    return cache_root() / user_id / stamp
 
 
 def cache_is_fresh(user_id: str, day: str | None = None) -> bool:
@@ -52,17 +55,38 @@ def save_weather(user_id: str, weather: WeatherCache, day: str | None = None) ->
     return path
 
 
+def _contained_path(base: Path, *parts: str) -> Path | None:
+    """Return resolved path if it stays under base; otherwise None."""
+    if any(part in ("", ".", "..") or "/" in part or "\\" in part for part in parts):
+        return None
+    candidate = Path(*parts)
+    if candidate.is_absolute() or ".." in candidate.parts:
+        return None
+    base_resolved = base.resolve()
+    path = (base_resolved.joinpath(*parts)).resolve()
+    if not path.is_relative_to(base_resolved):
+        return None
+    return path
+
+
 def write_body(user_id: str, article_id: str, body: str, day: str | None = None) -> str:
+    article_id = validate_id(article_id)
     folder = user_day_dir(user_id, day) / "bodies"
     folder.mkdir(parents=True, exist_ok=True)
-    rel = f"bodies/{article_id}.txt"
-    (folder / f"{article_id}.txt").write_text(body, encoding="utf-8")
-    return rel
+    path = _contained_path(folder, f"{article_id}.txt")
+    if path is None:
+        raise ValueError(f"Invalid article id '{article_id}'.")
+    path.write_text(body, encoding="utf-8")
+    return f"bodies/{article_id}.txt"
 
 
 def read_body(user_id: str, body_path: str, day: str | None = None) -> str:
-    path = user_day_dir(user_id, day) / body_path
-    if not path.exists():
+    folder = user_day_dir(user_id, day)
+    rel = Path(body_path)
+    if rel.is_absolute() or ".." in rel.parts:
+        return ""
+    path = _contained_path(folder, *rel.parts)
+    if path is None or not path.is_file():
         return ""
     return path.read_text(encoding="utf-8")
 

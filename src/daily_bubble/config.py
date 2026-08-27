@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 
 APP_NAME = "the-daily-bubble"
 DEFAULT_MODEL = "gpt-4.1"
-FALLBACK_MODEL = "gpt-4o"
 LANGSMITH_PROJECT = "the-daily-bubble"
 LOCAL_API_KEY_PLACEHOLDER = "not-needed"
 

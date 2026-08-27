@@ -54,7 +54,7 @@ def run_ingest(
         log(f"searching: {query}")
         try:
             hits.extend(search_news(query))
-        except Exception as exc:  # noqa: BLE001 — keep ingest moving in a demo
+        except Exception as exc:  # noqa: BLE001 — keep ingest moving on one failed query
             log(f"search failed ({query}): {exc}")
 
     hits = _dedupe_hits(hits)[:MAX_FETCH]

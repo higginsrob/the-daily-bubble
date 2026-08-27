@@ -426,7 +426,7 @@ def _cmd_profile(session: Session, arg: str) -> None:
         if llm_configured():
             session.rebuild_agent()
         _banner(session)
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, ValueError) as exc:
         console.print(f"[red]{exc}[/red]")
 
 
@@ -442,7 +442,7 @@ def _cmd_agent(session: Session, arg: str) -> None:
         if llm_configured() and session.user is not None:
             session.rebuild_agent()
         _banner(session)
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, ValueError) as exc:
         console.print(f"[red]{exc}[/red]")
 
 
@@ -485,7 +485,7 @@ def _cmd_show(session: Session, arg: str) -> None:
             persona = session.persona
         console.print(f"[bold]agent:{persona.id}[/bold]")
         console.print(format_agent_yaml(persona))
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, ValueError) as exc:
         console.print(f"[red]{exc}[/red]")
 
 
@@ -512,7 +512,7 @@ def _cmd_edit(session: Session, arg: str) -> None:
         else:
             target_agent = session.persona
         _start_guide(session, "agent", editing_agent=target_agent)
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, ValueError) as exc:
         console.print(f"[red]{exc}[/red]")
 
 

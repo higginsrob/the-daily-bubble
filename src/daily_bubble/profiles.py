@@ -121,6 +121,7 @@ def _load_agent_file(path: Path) -> AgentPersona:
 
 
 def load_user(user_id: str) -> UserProfile:
+    user_id = validate_id(user_id)
     path = users_dir() / f"{user_id}.yaml"
     if not path.exists():
         known = ", ".join(p.id for p in list_users()) or "(none)"
@@ -129,6 +130,7 @@ def load_user(user_id: str) -> UserProfile:
 
 
 def load_agent(agent_id: str) -> AgentPersona:
+    agent_id = validate_id(agent_id)
     path = agents_dir() / f"{agent_id}.yaml"
     if not path.exists():
         known = ", ".join(p.id for p in list_agents()) or "(none)"
@@ -137,10 +139,18 @@ def load_agent(agent_id: str) -> AgentPersona:
 
 
 def user_exists(user_id: str) -> bool:
+    try:
+        user_id = validate_id(user_id)
+    except ValueError:
+        return False
     return (users_dir() / f"{user_id}.yaml").exists()
 
 
 def agent_exists(agent_id: str) -> bool:
+    try:
+        agent_id = validate_id(agent_id)
+    except ValueError:
+        return False
     return (agents_dir() / f"{agent_id}.yaml").exists()
 
 
@@ -174,6 +184,7 @@ def resolve_agent_id(preferred: str | None = None) -> str:
 
 
 def set_active_user(user_id: str) -> AppConfig:
+    user_id = validate_id(user_id)
     load_user(user_id)
     cfg = load_config()
     cfg.active_user = user_id
@@ -182,6 +193,7 @@ def set_active_user(user_id: str) -> AppConfig:
 
 
 def set_active_agent(agent_id: str) -> AppConfig:
+    agent_id = validate_id(agent_id)
     load_agent(agent_id)
     cfg = load_config()
     cfg.active_agent = agent_id

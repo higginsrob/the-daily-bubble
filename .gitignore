@@ -1,7 +1,11 @@
 .env
+.env.*
+!.env.example
 .venv/
 .tmp-home/
 .tmp-home-onboard/
+.the-daily-bubble/
+.DS_Store
 __pycache__/
 *.py[cod]
 *$py.class
