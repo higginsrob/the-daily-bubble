@@ -1,0 +1,15 @@
+.env
+.venv/
+.tmp-home/
+.tmp-home-onboard/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.python-version
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
